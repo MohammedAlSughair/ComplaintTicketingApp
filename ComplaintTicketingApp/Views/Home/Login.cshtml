@@ -1,0 +1,102 @@
+﻿@model ComplaintTicketingApp.Models.UserViewModel
+
+@{
+	ViewData["Title"] = "Login";
+	 Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+	<link href="~/css/generalstyle.css" rel="stylesheet" />
+	<link href="~/css/loginstyle.css" rel="stylesheet" />
+</head>
+
+<body>
+	<div class="text-center">
+		<h2>Please Login</h2>
+		<button class="btn-success" id="btnlogin" onclick="OpenModal()">Login</button>
+	</div>
+
+	<div id="loginform" class="modal self-contained inline">
+		<form asp-action="Login" class="modal-content animate" id="sss">
+
+			<div class="imgcontainer">
+				<span onclick="Close()" class="close close-modal" title="Close Modal">&times;</span>
+				<img src="~/img_avatar2.png" alt="Avatar" class="avatar">
+			</div>
+
+			<div class="container">
+				<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				<div class="form-group">
+					<label asp-for="Name" class="control-label">User Name</label>
+					<input asp-for="Name" class="form-control user-view-control" />
+					<span asp-validation-for="Name" class="text-danger user-view-span"></span>
+				</div>
+				<div class="form-group">
+					<label asp-for="Password" class="control-label"></label>
+					<input asp-for="Password" class="form-control user-view-control" type="password" />
+					<span asp-validation-for="Password" class="text-danger user-view-span"></span>
+				</div>
+				<div class="form-group">
+					<button type="button" onclick="Submit()">Login</button>
+					<span class="text-danger user-view-span" id="Loginspan">@ViewData["error"]</span>
+				</div>
+
+			</div>
+
+			<div class="container login-container">
+				<button type="button" onclick="Close()" class="cancelbtn">Cancel</button>
+			</div>
+		</form>
+	</div>
+</body>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		if (document.getElementById('Loginspan').innerHTML != "")
+			document.getElementById('loginform').style.display = 'block';
+	});
+
+	var modal = document.getElementById('loginform');
+
+	// When the user clicks anywhere outside of the modal, close it
+	window.onclick = function (event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	}
+
+	function OpenModal() {
+		document.getElementById('loginform').style.display = 'block';
+	}
+
+	function Submit() {
+		var data = $("#sss").serialize();
+		console.log(data);
+		$.ajax({
+			type: 'POST',
+			url: '/Home/Login',
+			contentType: 'application/x-www-form-urlencoded; charset=UTF-8', // when we use .serialize() this generates the data in query string format. this needs the default contentType (default content type is: contentType: 'application/x-www-form-urlencoded; charset=UTF-8') so it is optional, you can remove it
+			data: data,
+			success: function (result) {
+				window.location.href = result.redirectToUrl
+				console.log(result);
+			},
+			error: function (result) {
+				document.getElementById('Loginspan').innerHTML = result.responseText;
+				console.log('Failed ');
+			}
+		})
+	}
+
+	function Close() {
+		document.getElementById('loginform').style.display = 'none';
+		$(".user-view-control").val("");
+		$(".user-view-span").html("");
+	@{
+		ViewData["error"] = "";
+	}
+		}
+
+</script>
+
+

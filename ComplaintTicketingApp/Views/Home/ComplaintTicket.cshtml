@@ -1,0 +1,676 @@
+﻿@{
+	ViewData["Title"] = "ServiceTicket";
+}
+
+<head>
+	<link href="~/css/generalstyle.css" rel="stylesheet" />
+	<link href="~/css/mainstyle.css" rel="stylesheet" />
+</head>
+
+<body>
+	<div>
+		<h1 class="text-center text-secondary">Complaint Ticket</h1>
+
+		<div id="Tickets">
+			<button class="btn btn-info main-button" id="btnAddTicket">
+				<i class="fa fa-plus-circle"></i>Add Ticket
+			</button>
+
+			<button class="btn btn-info main-button" id="btnRetTicket">
+				<i class="fa fa-refresh"></i>retrieve Ticket
+			</button>
+
+			<table class="table" id="tblTickets">
+				<thead class="thead-dark">
+					<tr>
+						<th scope="col">ID</th>
+						<th scope="col">Category</th>
+						<th scope="col">Issue Description</th>
+						<th scope="col">User Name</th>
+						<th scope="col">Status</th>
+						<th scope="col">Issue Date</th>
+						<th scope="col">Due Date</th>
+						<th scope="col">Solved Date</th>
+						<th scope="col" colspan="3" class="th-action">Action</th>
+					</tr>
+				</thead>
+
+				<tbody id="tblTicketsBody">
+				</tbody>
+			</table>
+		</div>
+
+		<div class="card card-body bg-light" id="TicketDetails">
+			<div class="modal-header card-body-header d-block">
+				<button type="button" id="btnxticketdetailsclose" class="close float-left card-body-close">&times;</button>
+				<h4 class="modal-title text-left">Ticket Details</h4>
+			</div>
+
+			<div class="row">
+				<div class="form-group col col-xl-3">
+					<label>Category</label>
+					<select id="TCategory" class="mdb-select md-form colorful-select dropdown-default form-control">
+						<option value="" disabled selected>Select Category</option>
+					</select>
+					<span id="CategorySpan" class="text-danger validation-span"></span>
+				</div>
+				
+			</div>
+
+			<div class="row">				
+				<div class="form-group col col-xl-3">
+					<label>Due Date</label>
+					<input id="TDueDate" class="date-input">
+					<span id="TDueDateSpan" class="text-danger validation-span"></span>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>Issue Description</label>
+				<textarea class="form-control" id="TIssueDesc"></textarea>
+				<span id="TIssueDesSspan" class="text-danger validation-span"></span>
+			</div>
+
+			<div id="fileuploaddiv" class="form-group form-upload">
+				<input id="fileUpload" type="file" name="files" multiple required />
+				<div id="dfile" class="file-upload">
+					<p id="pfile" class="alert alert-success alert-dismissible"></p>
+				</div>
+			</div>
+
+			<div id="filedownload" class="form-group form-download">
+				<a id="btnDownload" href="" target="_blank" class="page-link btn-Download" onclick="DownloadFile()">Download Document</a>
+			</div>
+
+			<div class="form-group" id="notediv">
+				<label>Note</label>
+				<textarea readonly class="form-control" id="textareanote"></textarea>
+			</div>
+
+			<div id="action">
+				<div class="row">
+					<div class="form-group col col-xl-3" id="ticketaction">
+						<label>Action To Do</label>
+						<select id="actionselect" class="mdb-select md-form colorful-select dropdown-default form-control">
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group" id="writenote">
+					<label>Write Note</label>
+					<textarea class="form-control" id="textwritenote"></textarea>
+				</div>
+
+				@* <div id="btnSave" class="form-group">
+					<button class="btn btn-primary btn-lg" onclick="SaveClick()">Save</button>
+					<span id="saveSpan" class="text-danger validation-span"></span>
+				</div> *@
+			</div>
+			<div id="btnSave" class="form-group">
+				<button class="btn btn-primary btn-lg" onclick="SaveClick()">Save</button>
+				<span id="saveSpan" class="text-danger validation-span"></span>
+			</div>
+
+			<div class="modal-footer d-block">
+				<button type="button" class="btn btn-default float-left modal-footer-close" id="btnticketdetailsclose">Close</button>
+			</div>
+		</div>
+
+		<div class="card card-body bg-light" id="tickettransacctions">
+			<div class="modal-header card-body-header d-block">
+				<button type="button" id="btnXtickettransacctionsclose" class="close float-left card-body-close">&times;</button>
+				<h4 class="modal-title text-left">Ticket Transacctions</h4>
+			</div>
+			<table class="table" id="tblTransactions">
+				<thead class="thead-dark">
+					<tr>
+						<th scope="col">From User</th>
+						<th scope="col">From Status</th>
+						<th scope="col">To Status</th>
+						<th scope="col">Action Date</th>
+						<th scope="col">Action Time</th>
+						<th scope="col">Note</th>
+					</tr>
+				</thead>
+
+				<tbody id="tblTransactionsBody">
+				</tbody>
+			</table>
+			<div class="modal-footer d-block">
+				<button type="button" class="btn btn-default float-left modal-footer-close" id="btntickettransacctionsclose">Close</button>
+			</div>
+		</div>
+
+		<div id="notemodal" class="modal sticky-top animate">
+			<div class="modal-content">
+				<span class="close close-modal" id="notemodalspanId">&times;</span>
+				<h1 class="text-center text-secondary">Please Write Why You Reject The Ticket</h1>
+
+				<div class="form-group modal-note">
+					<label>Note</label>
+					<textarea class="form-control modal-note-text" id="rejectnotetext"></textarea>
+					<span id="rejectnotespan" class="text-danger validation-span"></span>
+				</div>
+
+				<div class="form-group modal-note">
+					<button id="btnsavenote" class="btn btn-primary btn-lg" onclick="SaveNoteAndUpdateTicket()">Save</button>
+					<span id="savenotespan" class="text-danger validation-span"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+		CreateDatePicker('TDueDate', 'TDueDateSpan');
+
+		var _StatusMap = new Map();
+		var _TicketId;
+		var _AdminUserId;
+		var _DocumentId;
+		var _TicketStatus;
+		var _notetype;
+		var _fileBase64;
+		var _fileExt;
+		var _filename;
+		var CheckPermission;
+
+		RetrieveStatus();
+		RetrieveTicket();
+		HideButton();
+
+		if ("@ViewData["usertype"]" == "Admin")
+			$("#btnAddTicket").hide();
+
+	});
+
+	function HideButton() {
+		$("#dfile").hide();
+		 $("#btnSave").hide();
+	}
+
+	if (window.File && window.FileReader && window.FileList && window.Blob) {
+		document.getElementById('fileUpload').addEventListener('change', handleFileSelect, false);
+	} else {
+		alert('The File are not fully supported in this browser.');
+	}
+
+	function handleFileSelect(evt) {
+		try {
+			var f = evt.target.files[0]; // FileList object
+			_fileExt = "." + f.name.split('.').pop().toLowerCase();
+			_filename = f.name.split('.', 1).pop().toLowerCase();
+			var reader = new FileReader();
+			// Closure to capture the file information.
+			reader.onload = (function (theFile) {
+				return function (e) {
+					var binaryData = e.target.result;
+					//Converting Binary Data to base 64
+					var base64String = window.btoa(binaryData);
+					//showing file converted to base64
+					_fileBase64 = base64String;
+					document.getElementById('pfile').innerHTML = "File Uploaded successfuly";
+					$("#dfile").show();
+				};
+			})(f);
+			// Read in the image file as a data URL.
+			reader.readAsBinaryString(f);
+		}
+		catch {
+			_fileExt = "";
+			_filename = "";
+			_fileBase64 = "";
+			document.getElementById('pfile').innerHTML = "";
+			document.getElementById('dfile').innerHTML = "";
+			$("#dfile").hide();
+			alert('The File are not Uploaded');
+		}
+	}
+
+	$("#btnAddTicket").click(function () {
+		OpenTicketDetails(0);
+	});
+
+	$("#btnRetTicket").click(function () {
+		RetrieveTicket();
+	});
+
+	$("#btnxticketdetailsclose,#btnticketdetailsclose").click(function () {
+		CloseTicketDetails();
+	});
+
+	$("#btnXtickettransacctionsclose,#btntickettransacctionsclose").click(function () {
+		CloseTicketTransacctions();
+	});
+
+	$("#tickettransacctionsmodalspanId").click(function () {
+		CloseTicketTransacctionsModal();
+	});
+	$("#notemodalspanId").click(function () {
+		CloseNoteModal();
+	});
+
+	window.onclick = function (event) {
+		if (event.target == document.getElementById("tickettransacctionsmodal")) {
+			CloseTicketTransacctionsModal();
+		}
+
+		if (event.target == document.getElementById("notemodal")) {
+			CloseNoteModal();
+		}
+	}
+
+	function RetrieveStatus() {
+		var res = ApiCall('/api/Constant', 'GET', 'json', '');
+		if (res != null) {
+			_StatusMap = res;
+		}
+	}
+
+	function RetrieveTicket() {
+		$('#tblTicketsBody').html('');
+		//var response = ApiCall('@Url.Content("/api/ticket")', 'GET', 'json', '');
+		var res = ApiCall('/api/Ticket', 'GET', 'json', '');
+		if (res != null) {
+			var table = $('#tblTicketsBody');
+			for (i = 0; i < res.length; i++) {
+				var vDueDate = FormatDateDayFirst(res[i].dueDate);
+				var vSolvedDate = res[i].solvedDate == null ? '-' : FormatDateDayFirst(res[i].solvedDate);
+				var vIssueDate = FormatDateDayFirst(res[i].issueDate);
+
+				if (_StatusMap[res[i].status] == "AdminApproved") {
+					var $trToAppend = $('<tr style = "background-color:LimeGreen;">');
+				}
+				else {
+					if (_StatusMap[res[i].status] == "UserReturn" || _StatusMap[res[i].status] == "AdminReturnToUser") {
+						var $trToAppend = $('<tr style = "background-color:Red;">');
+					}
+					else {
+						if (_StatusMap[res[i].status] == "AdminNotApproved") {
+							var $trToAppend = $('<tr style = "background-color:#484848;">');
+						}
+						else {
+							var $trToAppend = $('<tr>')
+						}
+					}
+				}
+
+
+				var $tr = $trToAppend.append(
+					$('<td>').text(res[i].id),
+					$('<td>').text(res[i].category.name),
+					$('<td>').text(res[i].issueDescription),
+					$('<td>').text(res[i].entryUser.name == null ? '-' : res[i].entryUser.name),
+					$('<td>').text(_StatusMap[res[i].status]),
+					$('<td>').text(vIssueDate),
+					$('<td>').text(vDueDate),
+					$('<td>').text(vSolvedDate),
+					$("<td class='tbl-btn-view' onclick='ViewTicketTransaction(" + res[i].id + ");'><a href='#'><i class='fa fa-folder-open'></i>View Transactions</a></td>"),
+					$("<td class='btnEdit tbl-btn-edit'><a href='#'><i class='fa fa-edit'></i>Edit</a></td>"),
+				);
+				table.append($tr);
+			}
+		}
+
+		$(".btnEdit").click(function () {
+			// get the current row			
+			var currentRow = $(this).closest("tr");
+			CheckPermission(currentRow.find("td:eq(4)").text());
+			CheckStatus(currentRow.find("td:eq(4)").text());			
+			if (_CheckPermission)
+				OpenTicketDetails(currentRow.find("td:eq(0)").text());
+		});
+	}
+
+	function ViewTicketTransaction(ticketId) {
+		$("#Tickets").hide();
+		$("#tickettransacctions").show();
+		FillTicketTransactions(ticketId);
+	}
+
+	function FillTicketTransactions(ticketId) {
+		$('#tblTransactionsBody').html('');
+		var res = RetrieveTicketTransactions(ticketId);
+		if (res != null) {
+			var table = $('#tblTransactionsBody');
+			for (i = 0; i < res.length; i++) {
+				var vActionDate = FormatDateDayFirst(res[i].actionDate);
+				var vActionDateTime = GetTime(res[i].actionDate);
+				if (_StatusMap[res[i].toStatus] == "AdminApproved") {
+					var $trToAppend = $('<tr style = "background-color:LimeGreen;">');
+				}
+				else {
+					var $trToAppend = $('<tr>')
+				}
+
+				var $tr = $trToAppend.append(
+					$('<td>').text(res[i].fromUser.name),
+					$('<td>').text(_StatusMap[res[i].fromStatus]),
+					$('<td>').text(_StatusMap[res[i].toStatus]),
+					$('<td>').text(vActionDate),
+					$('<td>').text(vActionDateTime),
+					$('<td>').text(res[i].note)
+				);
+				table.append($tr);
+			}
+		}
+	}
+
+	function RetrieveTicketTransactions(ticketId) {
+		return ApiCall('/api/ticket/' + ticketId + '/tickettransaction', 'GET', 'json', '');
+	}
+
+	function CheckPermission(status) {
+		if (status == "NewRecord") {
+			FileControlVisability(1);
+			$("#action").hide();
+		}
+		else {
+			FileControlVisability(0);
+			$("#action").show();			
+		}
+	}	
+
+	function CheckStatus(status) {
+		_CheckPermission = true;
+		if ("@ViewData["usertype"]" == "Admin") {
+			if (status == _StatusMap[0] || status == _StatusMap[1]) {
+			}
+			else {
+				_CheckPermission = false;
+				alert("You have no Permission on this ticket for now.");
+			}
+		}
+
+		if ("@ViewData["usertype"]" == "User") {
+			if (status == _StatusMap[0]) {
+				$("#writenote").hide();
+				$("#action").hide();
+			}
+			if (status == _StatusMap[0] || status == _StatusMap[1] || status == _StatusMap[3]) {
+			}
+			else {
+				_CheckPermission = false;
+				alert("You have no Permission on this ticket for now.");
+			}
+		}
+	}
+	function FileControlVisability(newone) {
+		if (newone == 1) {
+			$("#fileUpload").prop('disabled', false);
+			$("#filedownload").hide();
+			$("#fileuploaddiv").show();
+		}
+		else {
+			$("#fileUpload").prop('disabled', true);
+			$("#filedownload").show();
+			$("#fileuploaddiv").hide();
+		}
+	}
+
+	function FillTicketDetails(id) {
+		if (id == 0) {
+			_TicketId = 0;
+			CheckPermission("NewRecord");
+		}
+		else {
+			var res = ApiCall('/api/Ticket/' + id, 'GET', 'json', '');
+			if (res != null) {
+				_TicketId = id;
+				$("#TCategory").val(res.categoryID);
+				// FillSubCategory();
+				$("#TIssueDesc").val(res.issueDescription);
+				$("#TDueDate").val(FormatDateDayFirst(res.dueDate));
+				_AdminUserId = res.adminUserID;
+				_TicketStatus = res.status;
+				_DocumentId = res.documentID;
+				if (_StatusMap[res.status] == _StatusMap[1] || _StatusMap[res.status] == _StatusMap[3] || _StatusMap[res.status] == _StatusMap[4]) {
+					var res = RetrieveTicketTransactions(id);
+					if (res != null) {
+						$("#textareanote").val(res[0].note);
+					}
+				}
+			}
+		}
+	}
+
+	function SaveClick() {
+		if (CheckValidation()) {
+			if (_TicketId == 0) {
+				SaveTicket();
+			}
+			else {
+				UpdateTicket();
+			}
+		}
+	}
+
+	function SaveTicket() {
+		var data = {
+			"CategoryID": $("#TCategory").val(),
+			"IssueDescription": $("#TIssueDesc")[0].value,
+			"UserID": Number(sessionStorage.getItem('userId')),
+			"DueDate": FromDatePicker($("#TDueDate").val()),
+			"UploadFile": _fileBase64,
+			"FileExtension": _fileExt,
+			"FileName": _filename
+		}
+
+		var res = ApiCall('/api/Ticket', 'POST', 'json', data);
+		if (res != null) {
+			CloseTicketDetails();
+			RetrieveTicket();
+		}
+	}
+
+	function CheckValidation() {
+		var isvalid = true;
+		var msg = CheckNullValidation("TCategory");
+		if (msg != "") {
+			$("#CategorySpan").html(msg);
+			isvalid = false
+		}
+		else 
+			$("#CategorySpan").html("");
+			
+		var msg = CheckDateValidation($('#TDueDate').val(), "TDueDate");
+		if (msg != "") {
+			$("#TDueDateSpan").html(msg);
+			isvalid = false
+		} else
+			$("#TDueDateSpan").html("");
+
+		var msg = CheckNullValidation("TIssueDesc");
+		if (msg != "") {
+			$("#TIssueDesSspan").html(msg);
+			isvalid = false
+		} else
+			$("#TIssueDesSspan").html("");
+
+		return isvalid;
+	}
+
+	function DownloadFile() {
+		//var res = ApiCall('/api/Document/' + $("#TDocId").val(), 'GET', 'json', '');
+		$("#btnDownload").attr('href', '/api/Document/' + _DocumentId);
+	}
+
+	function UpdateTicket(data) {
+		var data = {
+			"TicketID": _TicketId,
+			"Note": $("#textwritenote").val(),
+			"TicketAction": $("#actionselect").val()
+		}
+
+		var res = ApiCall('/api/Ticket', 'PUT', 'json', data);
+		if (res != null) {
+			CloseTicketDetails();
+			RetrieveTicket();
+		}
+	}
+
+	function Approved() {
+		var data;
+		if ("@ViewData["usertype"]" == "Admin") {
+			 data = {
+				"TicketID": _TicketId,
+				"Status": _StatusMap[3],
+				"SolvedDate": new Date($.now()),
+				"FromUserID": _AdminUserId,
+				"FromStatus": _TicketStatus,
+				"ToStatus": _StatusMap[3],
+				"ActionDate": new Date($.now())
+			}
+		}
+
+		if ("@ViewData["usertype"]" == "User") {
+			 data = {
+				"TicketID": _TicketId,
+				"Status": _StatusMap[1],
+				"FromStatus": $("#TStatus").val(),
+				"ToStatus": _StatusMap[1],
+				"ActionDate": new Date($.now())
+			}
+		}
+		// UpdateTicket(data);
+	}
+
+	function Return() {
+		_notetype = "Return";
+		document.getElementById("notemodal").style.display = "block";
+	}
+
+	function NotApproved() {
+		_notetype = "NotApproved";
+		document.getElementById("notemodal").style.display = "block";
+	}
+
+	function SaveNoteAndUpdateTicket() {
+		var checkmsg = CheckNullValidation("rejectnotetext");
+		if (checkmsg == "") {
+			if (_notetype == "Return") {
+				var data = {
+					"TicketID": _TicketId,
+					"Status": _StatusMap[4],
+					"SolvedDate": new Date($.now()),
+					"FromUserID": _AdminUserId,
+					"FromStatus": _TicketStatus,
+					"ToStatus": _StatusMap[4],
+					"ActionDate": new Date($.now()),
+					"Note": $("#rejectnotetext").val()
+				}
+				UpdateTicket(data);
+				document.getElementById("notemodal").style.display = "none";
+			}
+
+			if (_notetype == "NotApproved") {
+				if ("@ViewData["usertype"]" == "Admin") {
+					var data = {
+						"TicketID": _TicketId,
+						"Status": _StatusMap[5],
+						"SolvedDate": new Date($.now()),
+						"FromUserID": _AdminUserId,
+						"FromStatus": _TicketStatus,
+						"ToStatus": _StatusMap[5],
+						"ActionDate": new Date($.now()),
+						"Note": $("#rejectnotetext").val()
+					}
+				}
+
+				if ("@ViewData["usertype"]" == "User") {
+					var data = {
+						"TicketID": _TicketId,
+						"Status": _StatusMap[2],
+						"FromStatus": _TicketStatus,
+						"ToStatus": _StatusMap[2],
+						"ActionDate": new Date($.now()),
+						"Note": $("#rejectnotetext").val()
+					}
+				}
+				UpdateTicket(data);
+			}
+		}
+		else
+			$("#rejectnotespan").html(checkmsg);
+	}
+
+	function OpenTicketDetails(id) {
+		FillCategory();
+		 // FillUser();
+		FillTicketAction(id);
+		FillTicketDetails(id);
+		$("#Tickets").hide();
+		$("#TicketDetails").show();
+		$("#btnSave").show();
+	}
+
+	function CloseTicketDetails() {
+		EmptyHtml('TicketDetails');
+		$("#pfile").html("");
+		$("#dfile").hide();
+		$("#Tickets").show();
+		$("#TicketDetails").hide();
+		$("#btnSave").hide();
+		$("#fileUpload").prop('disabled', false);
+	}
+
+	function CloseNoteModal() {
+		EmptyHtml("notemodal");
+		document.getElementById("notemodal").style.display = "none";
+	}
+
+	function CloseTicketTransacctions() {
+		$('#tblTransactionsBody').html('');
+		$("#tickettransacctions").hide();
+		$("#Tickets").show();
+	}
+
+	function FillCategory() {
+		var res = ApiCall('/api/category/', 'GET', 'json', '');
+		if (res != null) {
+			var x = document.getElementById("TCategory");
+			for (i = 0; i < res.length; i++) {
+				var option = document.createElement("option");
+				option.value = res[i].id;
+				option.text = res[i].name;
+				option.className = "optionclass";
+				x.add(option);
+			}
+		}
+		$("#TCategory").val('');
+	}
+
+
+	// function FillUser() {
+	// 	var res = ApiCall('/api/user/', 'GET', 'json', '');
+	// 	if (res != null) {
+	// 		var x = document.getElementById("TUserName");
+	// 		for (i = 0; i < res.length; i++) {
+	// 			var option = document.createElement("option");
+	// 			option.value = res[i].id;
+	// 			option.text = res[i].name;
+	// 			option.className = "optionclass";
+	// 			x.add(option);
+	// 		}
+	// 	}
+	// 	$("#TReceiverName").val('');
+	// }
+
+	function FillTicketAction(ticketid) {
+		var res = ApiCall('/api/action/' + ticketid, 'GET', 'json', '');
+		if (res != null) {
+			var x = document.getElementById("actionselect");
+			for (i = 0; i < res.length; i++) {
+				var option = document.createElement("option");
+				option.value = res[i].id;
+				option.text = res[i].name;
+				option.className = "optionclass";
+				x.add(option);
+			}
+			$("#actionselect").select(x.options[0]);
+		}
+	}
+
+</script>

@@ -1,0 +1,22 @@
+﻿@{
+	ViewData["Main"] = "Main";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<div class="text-center">
+	<h1 class="display-4">Welcome To The Complaint Ticket Application</h1>
+	<a class="page-link" style="margin:10px" asp-controller="Home" asp-action="ComplaintTicket" asp-route-type="@ViewData["usertype"]">Complaint Ticket</a>
+	<a id="categoriesAdmin" class="page-link" style="margin:10px" asp-controller="Home" asp-action="Categories">Categories</a>
+	<a id="usersAdmin" class="page-link" style="margin:10px" asp-controller="Home" asp-action="Users">Users</a>
+</div>
+
+<script type="text/javascript">
+
+	$(document).ready(function () {		
+		if ("@ViewData["usertype"]" == "User") {
+			$("#categoriesAdmin").hide();
+			$("#usersAdmin").hide();
+		}
+	});
+</script>
